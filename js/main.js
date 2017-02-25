@@ -1,137 +1,22 @@
 jQuery(document).ready(function($){
-	var formModal = $('.cd-user-modal'),
-		formLogin = formModal.find('#cd-login'),
-		formSignup = formModal.find('#cd-signup'),
-		formForgotPassword = formModal.find('#cd-reset-password'),
-		formModalTab = $('.cd-switcher'),
-		tabLogin = formModalTab.children('li').eq(0).children('a'),
-		tabSignup = formModalTab.children('li').eq(1).children('a'),
-		forgotPasswordLink = formLogin.find('.cd-form-bottom-message a'),
-		backToLoginLink = formForgotPassword.find('.cd-form-bottom-message a'),
-		mainNav = $('.main-nav');
+	
+	$('#last-tweet').click(function(){
 
-	//open modal
-	mainNav.on('click', function(event){
-		$(event.target).is(mainNav) && mainNav.children('ul').toggleClass('is-visible');
+	   $("#tweet_result").text("Loading......");
+
+	   var username = $('#username').val();
+
+	   $.ajax({
+	     type: "GET",
+	     dataType: "json",
+	     url: "http://search.twitter.com/search.json?q=from:"+username+"&rpp=1&callback=?",
+	     success: function(data){
+	        $("#tweet_result").text(data.results[0].text);
+	        console.log(data.results[0].text)
+	     }
+	   });
+
 	});
-
-	//open sign-up form
-	mainNav.on('click', '.cd-signup', signup_selected);
-	//open login-form form
-	mainNav.on('click', '.cd-signin', login_selected);
-
-	//close modal
-	formModal.on('click', function(event){
-		if( $(event.target).is(formModal) || $(event.target).is('.cd-close-form') ) {
-			formModal.removeClass('is-visible');
-		}	
-	});
-	//close modal when clicking the esc keyboard button
-	$(document).keyup(function(event){
-    	if(event.which=='27'){
-    		formModal.removeClass('is-visible');
-	    }
-    });
-
-	//switch from a tab to another
-	formModalTab.on('click', function(event) {
-		event.preventDefault();
-		( $(event.target).is( tabLogin ) ) ? login_selected() : signup_selected();
-	});
-
-	//hide or show password
-	$('.hide-password').on('click', function(){
-		var togglePass= $(this),
-			passwordField = togglePass.prev('input');
-		
-		( 'password' == passwordField.attr('type') ) ? passwordField.attr('type', 'text') : passwordField.attr('type', 'password');
-		( 'Hide' == togglePass.text() ) ? togglePass.text('Show') : togglePass.text('Hide');
-		//focus and move cursor to the end of input field
-		passwordField.putCursorAtEnd();
-	});
-
-	//show forgot-password form 
-	forgotPasswordLink.on('click', function(event){
-		event.preventDefault();
-		forgot_password_selected();
-	});
-
-	//back to login from the forgot-password form
-	backToLoginLink.on('click', function(event){
-		event.preventDefault();
-		login_selected();
-	});
-
-	function login_selected(){
-		mainNav.children('ul').removeClass('is-visible');
-		formModal.addClass('is-visible');
-		formLogin.addClass('is-selected');
-		formSignup.removeClass('is-selected');
-		formForgotPassword.removeClass('is-selected');
-		tabLogin.addClass('selected');
-		tabSignup.removeClass('selected');
-	}
-
-	function signup_selected(){
-		mainNav.children('ul').removeClass('is-visible');
-		formModal.addClass('is-visible');
-		formLogin.removeClass('is-selected');
-		formSignup.addClass('is-selected');
-		formForgotPassword.removeClass('is-selected');
-		tabLogin.removeClass('selected');
-		tabSignup.addClass('selected');
-	}
-
-	function forgot_password_selected(){
-		formLogin.removeClass('is-selected');
-		formSignup.removeClass('is-selected');
-		formForgotPassword.addClass('is-selected');
-	}
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    var csrftoken = getCookie('csrftoken');
-	//REMOVE THIS - it's just to show error messages 
-	formLogin.find('input[type="submit"]').on('click', function(event){
-		event.preventDefault();
-		formLogin.find('input[type="email"]').toggleClass('has-error').next('span').toggleClass('is-visible');
-	});
-	formSignup.find('input[type="submit"]').on('click', function(event){
-        event.preventDefault();
-        $.ajaxSetup({beforeSend: function(xhr, settings){
-            xhr.setRequestHeader('X-CSRFToken',csrftoken);
-        }});
-        $.ajax({
-              type: "POST",
-              url: 'http://connectplay.herokuapp.com/api/registration/',
-              //data: JSON.stringify(data),
-               headers:{
-                    "Access-Control-Allow-Origin": "*"
-               },
-              data: '{"username":"blah",\
-                    "password1":"superman",\
-                    "password2":"superman",\
-                    "email":"johnxue88@yahoo.com",}',
-              success: function(){console.log("registration complete")},
-              contentType: "application/json",
-              dataType: "json",
-              crossDomain: false,
-        })
-		formSignup.find('input[type="email"]').toggleClass('has-error').next('span').toggleClass('is-visible');
-	});
-
 
 	//IE9 placeholder fallback
 	if(!Modernizr.input.placeholder){
