@@ -1,6 +1,7 @@
 <?php
 
   function executeQuery() {
+
     $servername = "";
     $username = "";
     $password = "";
@@ -14,11 +15,6 @@
     $result = $conn->query($sql);
     $conn->close();
     return $result;
-  }
-
-  //takes json from post content and returns json from db
-  function getProduct(post_score) {
-
   }
 
 ?>
