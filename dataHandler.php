@@ -37,7 +37,12 @@
   } //end checkRange
 
   function checkRange($emotion, $value, $range) {
-    $sql = "SELECT * FROM ProductTable WHERE ".$emotion." BETWEEN ".($value - $range)." AND ".($value + $range);
+    $emotions = array("anger","sadness","joy","disgust","fear");
+    // $sql = "SELECT anger, sadness, joy, fear, disgust FROM ProductTable WHERE ".$emotion." BETWEEN ".($value - $range)." AND ".($value + $range);
+    $sql =
+
+
+
     $result = executeQuery($sql);
 
     //if products found in that range, return true.
@@ -47,8 +52,14 @@
 
   //takes json from post content and returns json from db
   function getProducts($post_score) {
-    //select with each emotion in range
     $emotions = array("anger","sadness","joy","disgust","fear");
+    $sql = "SELECT * FROM ProductTable WHERE ";
+    foreach ($emotions as $emotion) {
+      
+    }
+
+    //select with each emotion in range
+
     $num_matched = 0;
     $range = 0.2;
 
@@ -57,7 +68,14 @@
       if checkRange($post_score[$emotion]) {
         $num_matched += 1;
       }
-      
+    }
+
+    if ($num_matched >= 3) {
+      $products = array();
+      $sql = "SELECT * FROM ProductTable WHERE $"
+    }
+    else {
+      return;
     }
 
   }
