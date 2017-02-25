@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   if (window.location.hash) {
     href = location.hash.slice(1) + ".html";
-    $("#div-main").load(href)l
+    $("#div-main").load(href);
   }
   else {
     window.location.hash = "#login";
@@ -12,5 +12,5 @@ $(document).ready(function() {
     var href = location.hash.slice(1) + ".html";
     $("#div-main").load(href);
   });
-  
+
 })
