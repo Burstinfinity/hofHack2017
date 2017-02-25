@@ -1,10 +1,18 @@
 <?php
 
-  function executeQuery() {
-    $servername = "";
-    $username = "";
-    $password = "";
-    $dbname = "";
+  if (isset($_POST["action"])) {
+    $action = $_POST["action"];
+    switch ($action) {
+      case "getAllProducts" :
+        getAllProducts();
+        break;
+    }
+  }
+  function executeQuery($sql) {
+    $servername = "localhost";
+    $username = "root";
+    $password = "TOPKA";
+    $dbname = "sbhack";
 
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
@@ -16,68 +24,49 @@
     return $result;
   }
 
-  function fuck($emotion, $value, $range) {
-    $sql = "SELECT * FROM ProductTable WHERE ".$emotion." BETWEEN ".($value - $range)." AND ".($value + $range);
+  //get all products from db and output to json
+  function getAllProducts() {
+    $sql = "SELECT * FROM ProductTable";
     $result = executeQuery($sql);
     $products = array();
-    if ($result->num_rows > 0) {
-      while ($row = $result->fetch_assoc()) {
-        $product = array(
-          "product_id"=>$row["product_id"],
-          "name"=>$row["name"],
-          "image"=>$row["image"],
-          "anger"=>$row["anger"],
-          "joy"=>$row["joy"],
-          "sadness"=>$row["sadness"]
-        );
-        array_push($products, $product);
-      } //end while
-    } //end if
-    return $products;
-  } //end checkRange
 
-  function checkRange($emotion, $value, $range) {
-    $emotions = array("anger","sadness","joy","disgust","fear");
-    // $sql = "SELECT anger, sadness, joy, fear, disgust FROM ProductTable WHERE ".$emotion." BETWEEN ".($value - $range)." AND ".($value + $range);
-    $sql =
-
-
-
-    $result = executeQuery($sql);
-
-    //if products found in that range, return true.
-    if ($result->num_rows > 0) { return TRUE; }
-    else { return FALSE; }
-  }
-
-  //takes json from post content and returns json from db
-  function getProducts($post_score) {
-    $emotions = array("anger","sadness","joy","disgust","fear");
-    $sql = "SELECT * FROM ProductTable WHERE ";
-    foreach ($emotions as $emotion) {
-      
+    if ($result->num_rows == 0) {
+      die("No products found");
     }
+    while ($row = $result->fetch_assoc()) {
+      $product = array(
+        "product_id"=>$row["product_id"],
+        "name"=>$row["name"],
+        "image"=>$row["image"],
+        "anger"=>$row["anger"],
+        "sadness"=>$row["fear"],
+        "disgust"=>$row["disgust"],
+        "joy"=>$row["joy"],
+        "fear"=>$row["fear"]
+      );
+      array_push($products, $product);
+    } //end while
+    echo json_encode($products);
+  } //end getAllProducts
 
-    //select with each emotion in range
+  //gets all products associated with given emotion
+  function getDemoProducts() {
+    $emotion = $_POST["emotion"];
+    $sql = "SELECT product_id, name, image FROM ProductDemo WHERE emotion = ".$emotion;
+    executeQuery($sql);
 
-    $num_matched = 0;
-    $range = 0.2;
+    $products = array();
 
-    foreach ($emotions as $emotion) {
-      //if product found
-      if checkRange($post_score[$emotion]) {
-        $num_matched += 1;
-      }
+    if ($result->num_rows == 0) {
+      die("No products found");
     }
-
-    if ($num_matched >= 3) {
-      $products = array();
-      $sql = "SELECT * FROM ProductTable WHERE $"
-    }
-    else {
-      return;
-    }
-
-  }
-
-?>
+    while ($row = $result->fetch_assoc()) {
+      $product = array(
+        "product_id"=>$row["product_id"],
+        "name"=>$row["name"],
+        "image"=>$row["image"]
+      );
+      array_push($products, $product);
+    } //end while
+    echo json_encode($products);
+  } //end getDemoProducts
